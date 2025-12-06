@@ -1,5 +1,3 @@
-// /src/components/PlacementGrid.tsx
-
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
@@ -12,6 +10,7 @@ type PlacementGridProps = {
 };
 
 export const PlacementGrid = ({ rows, columns, highlightedIndex, installedIndices, waitingIndices }: PlacementGridProps) => {
+  // On calcule le nombre total de cases
   const totalCells = rows * columns;
   const cells = Array.from({ length: totalCells }, (_, index) => index);
 
@@ -27,7 +26,7 @@ export const PlacementGrid = ({ rows, columns, highlightedIndex, installedIndice
             key={index}
             style={[
               styles.cell,
-              { width: `${100 / columns}%` },
+              { width: `${100 / columns}%` }, // Calcul dynamique de la largeur
               isHighlighted && styles.highlightedCell,
               isInstalled && styles.installedCell,
               isWaiting && styles.waitingCell,
@@ -50,26 +49,28 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     borderWidth: 1,
     borderColor: '#CCC',
+    // IMPORTANT : On retire toute hauteur fixe ou flex: 1 ici
+    alignSelf: 'flex-start', // Empêche le conteneur de s'étirer si le parent est grand
+    backgroundColor: '#fff', // Fond blanc propre
   },
   cell: {
-    aspectRatio: 1,
+    aspectRatio: 1, // Garde les cases carrées
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
+    borderWidth: 0.5, // Bordures plus fines pour un rendu plus net
     borderColor: '#CCC',
     backgroundColor: '#F0F0F0',
   },
   highlightedCell: {
     backgroundColor: '#2E7D32',
     borderColor: 'gold',
+    borderWidth: 2,
   },
   installedCell: {
     backgroundColor: '#005EB8',
-    borderColor: '#FFF',
   },
   waitingCell: {
     backgroundColor: '#FFC107',
-    borderColor: '#FFF',
   },
   cellText: {
     color: '#999',
