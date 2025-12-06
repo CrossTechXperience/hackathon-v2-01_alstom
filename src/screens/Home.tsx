@@ -137,10 +137,15 @@ export default function Home() {
                     <>
                         <Text style={[styles.modalTitle, {color: '#2E7D32'}]}>Pièce Identifiée !</Text>
                         <View style={styles.infoBox}>
+<<<<<<< HEAD
                             <Text style={styles.value}>CODE : {scannedPiece.piece.code}</Text>
+=======
+                            <Text style={styles.label}>REF : {scannedPiece.id}</Text>
+>>>>>>> 2ca788e5a9ff732f9b4fd0f819099c2cc7f1d8a5
 
                             <Text style={styles.label}>Wagon : {scannedPiece.wagon.numero}</Text>
 
+<<<<<<< HEAD
                             <Text style={styles.label}>Zone : {scannedPiece.zone.numero}</Text>
 
                             <Text style={styles.label}>Sac : {scannedPiece.sac.identifiant}</Text>
@@ -150,6 +155,11 @@ export default function Home() {
                             <Text style={styles.label}>
                               Prioritaire : {scannedPiece.piece.prioritaire ? '⭐ OUI' : 'Non'}
                             </Text>
+=======
+                            <Text style={styles.label}>Wagon : {scannedPiece.wagon}</Text>
+
+                            <Text style={styles.label}>État : {scannedPiece.state}</Text>
+>>>>>>> 2ca788e5a9ff732f9b4fd0f819099c2cc7f1d8a5
                         </View>
                     </>
                 ) : (
