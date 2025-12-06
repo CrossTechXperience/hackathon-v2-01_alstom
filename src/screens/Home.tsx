@@ -96,9 +96,11 @@ export default function Home() {
                     <>
                         <Text style={[styles.modalTitle, {color: '#2E7D32'}]}>Pièce Identifiée !</Text>
                         <View style={styles.infoBox}>
-                            <Text style={styles.value}>REF : {scannedPiece.id}</Text>
+                            <Text style={styles.label}>REF : {scannedPiece.id}</Text>
 
                             <Text style={styles.label}>Zone : {scannedPiece.zone}</Text>
+
+                            <Text style={styles.label}>Wagon : {scannedPiece.wagon}</Text>
 
                             <Text style={styles.label}>État : {scannedPiece.state}</Text>
                         </View>
