@@ -199,7 +199,7 @@ class DatabaseService {
         ...row,
         etat: row.etat as EtatPiece,
         prioritaire: row.prioritaire === 1,
-        position: row.position,
+        positionIndex: row.position,
       });
     }
     return pieces;
@@ -215,7 +215,7 @@ class DatabaseService {
         ...row,
         etat: row.etat as EtatPiece,
         prioritaire: row.prioritaire === 1,
-        position: row.position,
+        positionIndex: row.position,
       });
     }
     return pieces;
@@ -236,7 +236,7 @@ class DatabaseService {
         ...row,
         etat: row.etat as EtatPiece,
         prioritaire: true,
-        position: row.position,
+        positionIndex: row.position,
       });
     }
     return pieces;

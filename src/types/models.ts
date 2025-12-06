@@ -29,7 +29,7 @@ export interface Piece {
   code: string; // K50, A1, etc.
   etat: EtatPiece;
   prioritaire: boolean; // 0 = non, 1 = oui
-  position: number; // 0 à 15, position dans la grille
+  positionIndex: number; // 0 à 15, position dans la grille
   sacId: number;
   createdAt?: string;
 }
