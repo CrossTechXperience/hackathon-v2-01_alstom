@@ -19,9 +19,11 @@ export interface Sac {
 }
 
 export enum EtatPiece {
-  RIEN = 'RIEN',
-  SCANNE = 'SCANNE',
-  POSE = 'POSE',
+    UNINSTALLED = 0,
+    ONWAIT = 1,
+    BEING = 2,
+    INSTALLED = 3,
+    ERROR = 4,
 }
 
 export interface Piece {

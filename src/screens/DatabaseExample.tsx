@@ -21,20 +21,17 @@ export default function DatabaseExample() {
   const [piecesPrioritaires, setPiecesPrioritaires] = useState<Piece[]>([]);
 
   useEffect(() => {
-    initDatabase();
-
-    return () => {
-      database.close();
-    };
+    // La base de données est maintenant initialisée dans App.tsx.
+    // Ce composant se contente de charger les données.
+    loadDataWithLoading();
   }, []);
 
-  const initDatabase = async () => {
+  const loadDataWithLoading = async () => {
     try {
       setLoading(true);
-      await database.init();
       await loadData();
     } catch (error) {
-      Alert.alert('Erreur', 'Impossible d\'initialiser la base de données');
+      Alert.alert('Erreur', 'Impossible de charger les données');
       console.error(error);
     } finally {
       setLoading(false);
@@ -129,7 +126,7 @@ export default function DatabaseExample() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#007AFF" />
-        <Text style={styles.loadingText}>Chargement...</Text>
+        <Text style={styles.loadingText}>Chargement des données...</Text>
       </View>
     );
   }
