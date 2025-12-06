@@ -16,10 +16,18 @@ import {
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
 
+  const backgroundStyle = {
+      color: isDarkMode ? '#000' : '#fff',
+      flex: 1, // Important pour prendre tout l'écran
+    };
+
   return (
     <SafeAreaProvider>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
+      {/* On passe le style global ici pour le fond */}
+      <View style={backgroundStyle}>
+        <AppContent isDarkMode={isDarkMode} />
+      </View>
     </SafeAreaProvider>
   );
 }
@@ -32,12 +40,13 @@ function AppContent() {
   const [modalVisible, setModalVisible] = useState(false);
 
   return (
-    <View style={styles.container, { paddingTop: safeAreaInsets.top }}>
+    <View style={styles.container, { padding: safeAreaInsets.top }}>
       <TouchableOpacity
         style={[styles.topRightLink, {top: safeAreaInsets.top + 10}]}
         onPress={() => setModalVisible(true)}
       >
-        <Text style={styles.helpContainer}>?</Text>
+        <Text style={styles.helpButton}>?</Text>
+        <Text style={styles.scanButton}>Scanner</Text>
       </TouchableOpacity>
 
       <Text style={styles.title}>
@@ -54,18 +63,21 @@ function AppContent() {
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Informations</Text>
-            <Text styles={styles.text}>Ici les infos</Text>
+          <View
+            style={styles.modalOverlay}
+          >
+            <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>Informations</Text>
+                <Text styles={styles.text}>Ici les infos</Text>
 
-            // Bouton de fermeture
-            <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => setModalVisible(false)}
-            >
-                <Text style={styles.text}>Fermer</Text>
-            </TouchableOpacity>
-        </View>
+                <TouchableOpacity
+                    style={styles.closeButton}
+                    onPress={() => setModalVisible(false)}
+                >
+                    <Text style={styles.text}>Fermer</Text>
+                </TouchableOpacity>
+            </View>
+          </View>
       </Modal>
     </View>
   );
@@ -80,19 +92,24 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#fff'
   },
 
-  helpContainer: {
+  helpButton: {
     position: 'absolute',
     right: 5,
     fontSize: 36,
     color: 'green'
   },
 
+  scanButton: {
+    position: 'absolute',
+    right: 40,
+    fontSize: 36,
+    color: 'blue'
+  },
+
   text: {
     fontSize: 18,
-    color: '#fff'
   },
 
   // Style du "Lien" en haut à droite
@@ -108,10 +125,10 @@ const styles = StyleSheet.create({
       flex: 1,
       justifyContent: 'center', // Centre verticalement
       alignItems: 'center',     // Centre horizontalement
-      backgroundColor: 'rgba(0, 0, 0, 0.5)', // Noir à 50% de transparence
+      //backgroundColor: 'rgba(0, 0, 0, 0.5)', // Noir à 50% de transparence
     },
     modalContent: {
-      width: '80%', // Prend 80% de la largeur de l'écran
+      width: '70%', // Prend 80% de la largeur de l'écran
       backgroundColor: 'white',
       borderRadius: 20,
       padding: 25,
@@ -139,7 +156,6 @@ const styles = StyleSheet.create({
       elevation: 2,
     },
     closeButtonText: {
-      color: 'white',
       fontWeight: 'bold',
       textAlign: 'center',
 },
