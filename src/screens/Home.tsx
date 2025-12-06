@@ -82,7 +82,7 @@ export default function Home() {
       console.error(error);
     }
   };
-  const [scannedPiece, setScannedPiece] = useState<PieceData | null>(null);
+
   const [installedPieces, setInstalledPieces] = useState<number[]>([]);
   const [waitingPieces, setWaitingPieces] = useState<number[]>([]);
 
@@ -205,43 +205,38 @@ export default function Home() {
                                     waitingIndices={waitingPieces}
                                 />
                             </View>
-                            <View style={styles.infoBox}>
-                                <Text style={styles.label}>REF : {scannedPiece.id}</Text>
-                                <Text style={styles.label}>Zone : {scannedPiece.zone}</Text>
-                                <Text style={styles.label}>Wagon : {scannedPiece.wagon}</Text>
-                                <Text style={styles.label}>État : {getStatusText(scannedPiece.state)}</Text>
+
+                            <View style={styles.actionsContainer}>
+                                <TouchableOpacity
+                                    style={[styles.actionButton, {backgroundColor: '#2E7D32'}]}
+                                    onPress={() => handlePieceAction(PieceState.INSTALLED)}
+                                >
+                                    <Text style={styles.actionButtonText}>Valider la pose</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[styles.actionButton, {backgroundColor: '#FFC107'}]}
+                                    onPress={() => handlePieceAction(PieceState.ONWAIT)}
+                                >
+                                    <Text style={[styles.actionButtonText, {color: 'black'}]}>Mettre en attente</Text>
+                                </TouchableOpacity>
                             </View>
-                        </View>
+                            <View style={styles.infoBox}>
+                                <Text style={styles.value}>CODE : {scannedPiece.piece.code}</Text>
 
-                        <View style={styles.actionsContainer}>
-                            <TouchableOpacity
-                                style={[styles.actionButton, {backgroundColor: '#2E7D32'}]}
-                                onPress={() => handlePieceAction(PieceState.INSTALLED)}
-                            >
-                                <Text style={styles.actionButtonText}>Valider la pose</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[styles.actionButton, {backgroundColor: '#FFC107'}]}
-                                onPress={() => handlePieceAction(PieceState.ONWAIT)}
-                            >
-                                <Text style={[styles.actionButtonText, {color: 'black'}]}>Mettre en attente</Text>
-                            </TouchableOpacity>
-                        <View style={styles.infoBox}>
-                            <Text style={styles.value}>CODE : {scannedPiece.piece.code}</Text>
+                                <Text style={styles.label}>Wagon : {scannedPiece.wagon.numero}</Text>
 
-                            <Text style={styles.label}>Wagon : {scannedPiece.wagon.numero}</Text>
+                                <Text style={styles.label}>Zone : {scannedPiece.zone.numero}</Text>
 
-                            <Text style={styles.label}>Zone : {scannedPiece.zone.numero}</Text>
+                                <Text style={styles.label}>Sac : {scannedPiece.sac.identifiant}</Text>
 
-                            <Text style={styles.label}>Sac : {scannedPiece.sac.identifiant}</Text>
+                                <Text style={styles.label}>Position : {scannedPiece.piece.positionIndex}</Text>
 
-                            <Text style={styles.label}>Position : {scannedPiece.piece.positionIndex}</Text>
+                                <Text style={styles.label}>État : {scannedPiece.piece.etat}</Text>
 
-                            <Text style={styles.label}>État : {scannedPiece.piece.etat}</Text>
-
-                            <Text style={styles.label}>
-                              Prioritaire : {scannedPiece.piece.prioritaire ? 'OUI' : 'Non'}
-                            </Text>
+                                <Text style={styles.label}>
+                                  Prioritaire : {scannedPiece.piece.prioritaire ? 'OUI' : 'Non'}
+                                </Text>
+                            </View>
                         </View>
                     </>
                 ) : (
