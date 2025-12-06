@@ -1,80 +1,124 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React, { useState } from 'react';
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View, Text, Modal, TouchableOpacity } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import { StyleSheet, useColorScheme, View, Text, Modal, TouchableOpacity, Alert } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Scanner from './Scanner';
 
-function App() {
+type PieceData = {
+  id: string;
+  priority: boolean;
+  state: number;
+  zone: string;
+  wagon: string;
+};
+
+export default function Home() {
   const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-      color: isDarkMode ? '#000' : '#fff',
-      flex: 1, // Important pour prendre tout l'écran
-    };
-
-  return (
-    <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      {/* On passe le style global ici pour le fond */}
-      <View style={backgroundStyle}>
-        <AppContent isDarkMode={isDarkMode} />
-      </View>
-    </SafeAreaProvider>
-  );
-}
-
-function AppContent() {
   const safeAreaInsets = useSafeAreaInsets();
 
-  // Variables
-  const appTitle = "Welcome to my app !";
+  // États
   const [modalVisible, setModalVisible] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
 
+  //Etat pour stocker la pièce scannée
+  const [scannedPiece, setScannedPiece] = useState<PieceData | null>(null);
+
+  const backgroundStyle = {
+    backgroundColor: isDarkMode ? '#333' : '#fff',
+    flex: 1,
+  };
+  const textStyle = { color: isDarkMode ? '#fff' : '#000' };
+
+  // --- LOGIQUE DU SCANNER ---
+  if (isScanning) {
+      return (
+          <Scanner
+            onClose={() => setIsScanning(false)}
+            onScan={(val) => {
+                try {
+                    // On lit les infos
+                    console.log("Lecture du QR:", val);
+                    const data = JSON.parse(val); // On convertit le texte en Objet
+
+                    setScannedPiece(data); // On sauvegarde
+                    setIsScanning(false);  // On ferme la caméra
+                    setModalVisible(true); // On ouvre la fiche info
+                } catch (e) {
+                    // Si ce n'est pas du JSON valide
+                    Alert.alert("Erreur", "Ce QR Code n'est pas valide pour l'application.");
+                    setIsScanning(false);
+                }
+            }}
+          />
+      );
+  }
+
+  // --- ACCUEIL ---
   return (
-    <View style={styles.container, { padding: safeAreaInsets.top }}>
+    <View style={[styles.container, backgroundStyle, { paddingTop: safeAreaInsets.top }]}>
+
       <TouchableOpacity
-        style={[styles.topRightLink, {top: safeAreaInsets.top + 10}]}
-        onPress={() => setModalVisible(true)}
+        style={styles.topRightLink}
+        onPress={() => {
+            setScannedPiece(null);
+            setModalVisible(true);
+        }}
       >
         <Text style={styles.helpButton}>?</Text>
-        <Text style={styles.scanButton}>Scanner</Text>
       </TouchableOpacity>
 
-      <Text style={styles.title}>
-        {appTitle}
+      <Text style={[styles.title, textStyle]}>
+        Alstom CTX
       </Text>
 
-      <Text style={styles.text}>
-        Il est prêt à coder ?
+      <Text style={[styles.text, textStyle, {marginBottom: 30}]}>
+        Prêt à poser les panneaux ?
       </Text>
 
+      <TouchableOpacity
+        style={styles.bigScanButton}
+        onPress={() => setIsScanning(true)}
+      >
+        <Text style={styles.bigScanButtonText}>Scanner</Text>
+      </TouchableOpacity>
+
+      {/* --- MODALE DYNAMIQUE --- */}
       <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-          <View
-            style={styles.modalOverlay}
-          >
+          <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
-                <Text style={styles.modalTitle}>Informations</Text>
-                <Text styles={styles.text}>Ici les infos</Text>
 
+                {/* SI ON A SCANNÉ UNE PIÈCE */}
+                {scannedPiece ? (
+                    <>
+                        <Text style={[styles.modalTitle, {color: '#2E7D32'}]}>Pièce Identifiée !</Text>
+                        <View style={styles.infoBox}>
+                            <Text style={styles.value}>REF : {scannedPiece.id}</Text>
+
+                            <Text style={styles.label}>Zone : {scannedPiece.zone}</Text>
+
+                            <Text style={styles.label}>État : {scannedPiece.state}</Text>
+                        </View>
+                    </>
+                ) : (
+                    /* SI C'EST JUSTE L'AIDE */
+                    <>
+                        <Text style={styles.modalTitle}>Aide</Text>
+                        <Text style={styles.modalText}>
+                            Utilisez le scanner pour identifier l'emplacement des panneaux phoniques via leur QR Code.
+                        </Text>
+                    </>
+                )}
+
+                {/* Bouton Fermer (s'affiche toujours en bas) */}
                 <TouchableOpacity
-                    style={styles.closeButton}
+                    style={[styles.closeButton, {marginTop: 10, backgroundColor: '#888'}]}
                     onPress={() => setModalVisible(false)}
                 >
-                    <Text style={styles.text}>Fermer</Text>
+                    <Text style={styles.closeButtonText}>Fermer</Text>
                 </TouchableOpacity>
             </View>
           </View>
@@ -85,80 +129,96 @@ function AppContent() {
 
 const styles = StyleSheet.create({
   container: {
-    margin: 50,
+    padding: 20,
     flex: 1,
   },
-
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
+    marginBottom: 20,
+    marginTop: 20,
   },
-
-  helpButton: {
-    position: 'absolute',
-    right: 5,
-    fontSize: 36,
-    color: 'green'
-  },
-
-  scanButton: {
-    position: 'absolute',
-    right: 40,
-    fontSize: 36,
-    color: 'blue'
-  },
-
   text: {
     fontSize: 18,
   },
-
-  // Style du "Lien" en haut à droite
-    topRightLink: {
-      position: 'absolute',
-      right: 20,
-      zIndex: 10,
-      padding: 5, // Zone de touche un peu plus grande
-    },
-
-    // --- STYLES DE LA MODALE ---
-    modalOverlay: {
-      flex: 1,
-      justifyContent: 'center', // Centre verticalement
-      alignItems: 'center',     // Centre horizontalement
-      //backgroundColor: 'rgba(0, 0, 0, 0.5)', // Noir à 50% de transparence
-    },
-    modalContent: {
-      width: '70%', // Prend 80% de la largeur de l'écran
-      backgroundColor: 'white',
-      borderRadius: 20,
-      padding: 25,
+  topRightLink: {
+    position: 'absolute',
+    right: 20,
+    top: 50,
+    zIndex: 10,
+  },
+  helpButton: {
+    fontSize: 30,
+    color: 'green',
+    fontWeight: 'bold',
+  },
+  bigScanButton: {
+      backgroundColor: '#005EB8',
+      padding: 20,
+      borderRadius: 15,
       alignItems: 'center',
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
+      marginTop: 20,
       elevation: 5,
-    },
-    modalTitle: {
+  },
+  bigScanButtonText: {
+      color: 'white',
       fontSize: 20,
       fontWeight: 'bold',
-      marginBottom: 15,
-    },
-    modalText: {
-      marginBottom: 20,
-      textAlign: 'center',
-    },
-    closeButton: {
-      backgroundColor: '#2196F3', // Bleu Material Design
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: '85%',
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 25,
+    alignItems: 'center',
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    color: 'black',
+  },
+  modalText: {
+    marginBottom: 20,
+    textAlign: 'center',
+    color: '#333',
+  },
+  // Nouveaux styles pour la fiche pièce
+  infoBox: {
+      width: '100%',
+      backgroundColor: '#F5F5F5',
+      padding: 15,
       borderRadius: 10,
-      padding: 10,
-      paddingHorizontal: 20,
-      elevation: 2,
-    },
-    closeButtonText: {
+      marginBottom: 15,
+  },
+  label: {
       fontWeight: 'bold',
-      textAlign: 'center',
-},
+      color: '#555',
+      marginTop: 5,
+  },
+  value: {
+      fontSize: 18,
+      color: '#000',
+      marginBottom: 5,
+  },
+  closeButton: {
+    backgroundColor: '#2196F3',
+    borderRadius: 10,
+    padding: 12,
+    paddingHorizontal: 20,
+    width: '100%',
+  },
+  closeButtonText: {
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: 'white',
+    fontSize: 16
+  },
 });
-
-export default App;
