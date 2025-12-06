@@ -59,6 +59,7 @@ class DatabaseService {
         code TEXT NOT NULL,
         etat TEXT NOT NULL DEFAULT 'RIEN',
         prioritaire INTEGER NOT NULL DEFAULT 0,
+        position INTEGER NOT NULL DEFAULT 0,
         sacId INTEGER NOT NULL,
         createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (sacId) REFERENCES sacs(id) ON DELETE CASCADE
@@ -176,11 +177,11 @@ class DatabaseService {
   }
 
   // ==================== PIECES ====================
-  async addPiece(code: string, etat: EtatPiece, prioritaire: boolean, sacId: number): Promise<number> {
+  async addPiece(code: string, etat: EtatPiece, prioritaire: boolean, position: number, sacId: number): Promise<number> {
     if (!this.db) throw new Error('Base de données non initialisée');
     const result = await this.db.executeSql(
-      'INSERT INTO pieces (code, etat, prioritaire, sacId) VALUES (?, ?, ?, ?)',
-      [code, etat, prioritaire ? 1 : 0, sacId]
+      'INSERT INTO pieces (code, etat, prioritaire, position, sacId) VALUES (?, ?, ?, ?, ?)',
+      [code, etat, prioritaire ? 1 : 0, position, sacId]
     );
     return result[0].insertId;
   }
@@ -188,7 +189,7 @@ class DatabaseService {
   async getPiecesBySac(sacId: number): Promise<Piece[]> {
     if (!this.db) throw new Error('Base de données non initialisée');
     const result = await this.db.executeSql(
-      'SELECT * FROM pieces WHERE sacId = ? ORDER BY code',
+      'SELECT * FROM pieces WHERE sacId = ? ORDER BY position',
       [sacId]
     );
     const pieces: Piece[] = [];
@@ -198,6 +199,7 @@ class DatabaseService {
         ...row,
         etat: row.etat as EtatPiece,
         prioritaire: row.prioritaire === 1,
+        position: row.position,
       });
     }
     return pieces;
@@ -205,7 +207,7 @@ class DatabaseService {
 
   async getAllPieces(): Promise<Piece[]> {
     if (!this.db) throw new Error('Base de données non initialisée');
-    const result = await this.db.executeSql('SELECT * FROM pieces ORDER BY code');
+    const result = await this.db.executeSql('SELECT * FROM pieces ORDER BY position');
     const pieces: Piece[] = [];
     for (let i = 0; i < result[0].rows.length; i++) {
       const row = result[0].rows.item(i);
@@ -213,6 +215,7 @@ class DatabaseService {
         ...row,
         etat: row.etat as EtatPiece,
         prioritaire: row.prioritaire === 1,
+        position: row.position,
       });
     }
     return pieces;
@@ -225,7 +228,7 @@ class DatabaseService {
 
   async getPiecesPrioritaires(): Promise<Piece[]> {
     if (!this.db) throw new Error('Base de données non initialisée');
-    const result = await this.db.executeSql('SELECT * FROM pieces WHERE prioritaire = 1 ORDER BY code');
+    const result = await this.db.executeSql('SELECT * FROM pieces WHERE prioritaire = 1 ORDER BY position');
     const pieces: Piece[] = [];
     for (let i = 0; i < result[0].rows.length; i++) {
       const row = result[0].rows.item(i);
@@ -233,6 +236,7 @@ class DatabaseService {
         ...row,
         etat: row.etat as EtatPiece,
         prioritaire: true,
+        position: row.position,
       });
     }
     return pieces;

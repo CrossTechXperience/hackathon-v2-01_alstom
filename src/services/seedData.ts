@@ -59,46 +59,46 @@ export async function seedDatabase() {
 
     console.log('✅ Sacs créés');
 
-    // Créer des pièces dans les sacs
+    // Créer des pièces dans les sacs (position: 0-15 pour la grille 4x4)
     const piecesData = [
-      // SAC-001
-      { code: 'K50', etat: EtatPiece.POSE, prioritaire: true, sacIndex: 0 },
-      { code: 'A1', etat: EtatPiece.SCANNE, prioritaire: false, sacIndex: 0 },
-      { code: 'B23', etat: EtatPiece.RIEN, prioritaire: false, sacIndex: 0 },
+      // SAC-001 (positions 0-2)
+      { code: 'K50', etat: EtatPiece.POSE, prioritaire: true, positionIndex: 0, sacIndex: 0 },
+      { code: 'A1', etat: EtatPiece.SCANNE, prioritaire: false, positionIndex: 1, sacIndex: 0 },
+      { code: 'B23', etat: EtatPiece.RIEN, prioritaire: false, positionIndex: 2, sacIndex: 0 },
 
-      // SAC-002
-      { code: 'K51', etat: EtatPiece.POSE, prioritaire: true, sacIndex: 1 },
-      { code: 'C45', etat: EtatPiece.SCANNE, prioritaire: false, sacIndex: 1 },
+      // SAC-002 (positions 3-4)
+      { code: 'K51', etat: EtatPiece.POSE, prioritaire: true, positionIndex: 3, sacIndex: 1 },
+      { code: 'C45', etat: EtatPiece.SCANNE, prioritaire: false, positionIndex: 4, sacIndex: 1 },
 
-      // SAC-003
-      { code: 'D12', etat: EtatPiece.RIEN, prioritaire: false, sacIndex: 2 },
-      { code: 'K52', etat: EtatPiece.POSE, prioritaire: true, sacIndex: 2 },
-      { code: 'E78', etat: EtatPiece.SCANNE, prioritaire: false, sacIndex: 2 },
+      // SAC-003 (positions 5-7)
+      { code: 'D12', etat: EtatPiece.RIEN, prioritaire: false, positionIndex: 5, sacIndex: 2 },
+      { code: 'K52', etat: EtatPiece.POSE, prioritaire: true, positionIndex: 6, sacIndex: 2 },
+      { code: 'E78', etat: EtatPiece.SCANNE, prioritaire: false, positionIndex: 7, sacIndex: 2 },
 
-      // SAC-004
-      { code: 'F90', etat: EtatPiece.RIEN, prioritaire: false, sacIndex: 3 },
-      { code: 'G34', etat: EtatPiece.SCANNE, prioritaire: false, sacIndex: 3 },
+      // SAC-004 (positions 8-9)
+      { code: 'F90', etat: EtatPiece.RIEN, prioritaire: false, positionIndex: 8, sacIndex: 3 },
+      { code: 'G34', etat: EtatPiece.SCANNE, prioritaire: false, positionIndex: 9, sacIndex: 3 },
 
-      // SAC-005
-      { code: 'K53', etat: EtatPiece.POSE, prioritaire: true, sacIndex: 4 },
-      { code: 'H56', etat: EtatPiece.RIEN, prioritaire: false, sacIndex: 4 },
+      // SAC-005 (positions 10-11)
+      { code: 'K53', etat: EtatPiece.POSE, prioritaire: true, positionIndex: 10, sacIndex: 4 },
+      { code: 'H56', etat: EtatPiece.RIEN, prioritaire: false, positionIndex: 11, sacIndex: 4 },
 
-      // SAC-006
-      { code: 'I22', etat: EtatPiece.SCANNE, prioritaire: false, sacIndex: 5 },
-      { code: 'J88', etat: EtatPiece.RIEN, prioritaire: false, sacIndex: 5 },
+      // SAC-006 (positions 12-13)
+      { code: 'I22', etat: EtatPiece.SCANNE, prioritaire: false, positionIndex: 12, sacIndex: 5 },
+      { code: 'J88', etat: EtatPiece.RIEN, prioritaire: false, positionIndex: 13, sacIndex: 5 },
 
-      // SAC-007
-      { code: 'K54', etat: EtatPiece.POSE, prioritaire: true, sacIndex: 6 },
-      { code: 'L15', etat: EtatPiece.SCANNE, prioritaire: false, sacIndex: 6 },
-      { code: 'M99', etat: EtatPiece.RIEN, prioritaire: false, sacIndex: 6 },
+      // SAC-007 (positions 14-15, puis 0)
+      { code: 'K54', etat: EtatPiece.POSE, prioritaire: true, positionIndex: 14, sacIndex: 6 },
+      { code: 'L15', etat: EtatPiece.SCANNE, prioritaire: false, positionIndex: 15, sacIndex: 6 },
+      { code: 'M99', etat: EtatPiece.RIEN, prioritaire: false, positionIndex: 0, sacIndex: 6 },
 
-      // SAC-008
-      { code: 'N44', etat: EtatPiece.SCANNE, prioritaire: false, sacIndex: 7 },
-      { code: 'K55', etat: EtatPiece.POSE, prioritaire: true, sacIndex: 7 },
+      // SAC-008 (positions 1-2)
+      { code: 'N44', etat: EtatPiece.SCANNE, prioritaire: false, positionIndex: 1, sacIndex: 7 },
+      { code: 'K55', etat: EtatPiece.POSE, prioritaire: true, positionIndex: 2, sacIndex: 7 },
 
-      // SAC-009
-      { code: 'O77', etat: EtatPiece.RIEN, prioritaire: false, sacIndex: 8 },
-      { code: 'P33', etat: EtatPiece.SCANNE, prioritaire: false, sacIndex: 8 },
+      // SAC-009 (positions 3-4)
+      { code: 'O77', etat: EtatPiece.RIEN, prioritaire: false, positionIndex: 3, sacIndex: 8 },
+      { code: 'P33', etat: EtatPiece.SCANNE, prioritaire: false, positionIndex: 4, sacIndex: 8 },
     ];
 
     for (const pieceData of piecesData) {
@@ -106,6 +106,7 @@ export async function seedDatabase() {
         pieceData.code,
         pieceData.etat,
         pieceData.prioritaire,
+        pieceData.positionIndex,
         sacIds[pieceData.sacIndex]
       );
     }

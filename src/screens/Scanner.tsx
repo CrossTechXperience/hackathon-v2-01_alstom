@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
         // --- FIN STYLES DU MASQUE ---
 
         closeButton: {
-            position: 'absolute',
+            positionIndex: 'absolute',
             top: 50,
             left: 20,
             zIndex: 10, // Tout au-dessus
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
         },
         closeText: { fontWeight: 'bold', color: 'white' },
         helpTextContainer: {
-            position: 'absolute',
+            positionIndex: 'absolute',
             bottom: 80,
             left: 0,
             right: 0,

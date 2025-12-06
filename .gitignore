@@ -51,3 +51,7 @@ yarn-error.log
 *.db-shm
 *.db-wal
 DATABASE_SETUP.md 
+
+# Merge Conflict 
+package.json
+package-lock.json
