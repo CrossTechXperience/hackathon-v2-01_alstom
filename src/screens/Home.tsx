@@ -1,15 +1,10 @@
-import React, { useState } from 'react';
-import { StyleSheet, useColorScheme, View, Text, Modal, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, useColorScheme, View, Text, Modal, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Scanner from './Scanner';
-
-type PieceData = {
-  id: string;
-  priority: boolean;
-  state: number;
-  zone: string;
-  wagon: string;
-};
+import { scannerManager, PieceCompleteInfo } from '../services/scannerManager';
+import { database } from '../services/database';
+import { seedDatabase } from '../services/seedData';
 
 export default function Home() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -18,9 +13,39 @@ export default function Home() {
   // États
   const [modalVisible, setModalVisible] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
+  const [dbReady, setDbReady] = useState(false);
 
   //Etat pour stocker la pièce scannée
-  const [scannedPiece, setScannedPiece] = useState<PieceData | null>(null);
+  const [scannedPiece, setScannedPiece] = useState<PieceCompleteInfo | null>(null);
+
+  // Initialiser la DB au montage
+  useEffect(() => {
+    initDB();
+    return () => {
+      database.close();
+    };
+  }, []);
+
+  const initDB = async () => {
+    try {
+      await database.init();
+
+      // Vérifier si la DB est vide
+      const pieces = await database.getAllPieces();
+
+      // Si DB vide, générer des données de test automatiquement
+      if (pieces.length === 0) {
+        console.log('Base de données vide, génération des données de test...');
+        await seedDatabase();
+        console.log('Données de test générées avec succès !');
+      }
+
+      setDbReady(true);
+    } catch (error) {
+      Alert.alert('Erreur', 'Impossible d\'initialiser la base de données');
+      console.error(error);
+    }
+  };
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? '#333' : '#fff',
@@ -33,23 +58,39 @@ export default function Home() {
       return (
           <Scanner
             onClose={() => setIsScanning(false)}
-            onScan={(val) => {
+            onScan={async (val) => {
                 try {
-                    // On lit les infos
-                    console.log("Lecture du QR:", val);
-                    const data = JSON.parse(val); // On convertit le texte en Objet
+                    console.log("Code scanné:", val);
 
-                    setScannedPiece(data); // On sauvegarde
-                    setIsScanning(false);  // On ferme la caméra
-                    setModalVisible(true); // On ouvre la fiche info
+                    // Chercher la pièce dans la DB
+                    const pieceInfo = await scannerManager.handlePieceScan(val);
+
+                    if (pieceInfo) {
+                        setScannedPiece(pieceInfo); // On sauvegarde
+                        setIsScanning(false);  // On ferme la caméra
+                        setModalVisible(true); // On ouvre la fiche info
+                    } else {
+                        Alert.alert("Pièce non trouvée", `Le code "${val}" n'existe pas dans la base de données.`);
+                        setIsScanning(false);
+                    }
                 } catch (e) {
-                    // Si ce n'est pas du JSON valide
-                    Alert.alert("Erreur", "Ce QR Code n'est pas valide pour l'application.");
+                    console.error('Erreur scan:', e);
+                    Alert.alert("Erreur", "Une erreur est survenue lors du scan.");
                     setIsScanning(false);
                 }
             }}
           />
       );
+  }
+
+  // Afficher un loader pendant l'initialisation
+  if (!dbReady) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#007AFF" />
+        <Text style={{ marginTop: 10 }}>Initialisation...</Text>
+      </View>
+    );
   }
 
   // --- ACCUEIL ---
@@ -96,11 +137,19 @@ export default function Home() {
                     <>
                         <Text style={[styles.modalTitle, {color: '#2E7D32'}]}>Pièce Identifiée !</Text>
                         <View style={styles.infoBox}>
-                            <Text style={styles.value}>REF : {scannedPiece.id}</Text>
+                            <Text style={styles.value}>CODE : {scannedPiece.piece.code}</Text>
 
-                            <Text style={styles.label}>Zone : {scannedPiece.zone}</Text>
+                            <Text style={styles.label}>Wagon : {scannedPiece.wagon.numero}</Text>
 
-                            <Text style={styles.label}>État : {scannedPiece.state}</Text>
+                            <Text style={styles.label}>Zone : {scannedPiece.zone.numero}</Text>
+
+                            <Text style={styles.label}>Sac : {scannedPiece.sac.identifiant}</Text>
+
+                            <Text style={styles.label}>État : {scannedPiece.piece.etat}</Text>
+
+                            <Text style={styles.label}>
+                              Prioritaire : {scannedPiece.piece.prioritaire ? '⭐ OUI' : 'Non'}
+                            </Text>
                         </View>
                     </>
                 ) : (
