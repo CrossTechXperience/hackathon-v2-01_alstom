@@ -27,15 +27,15 @@ class ScannerManager {
       }
 
       // 2. Mettre à jour l'état de la pièce
-      // RIEN → SCANNE → POSE
+      // UNINSTALLED → ONWAIT → INSTALLED
       let newEtat: EtatPiece = piece.etat;
 
-      if (piece.etat === EtatPiece.RIEN) {
-        newEtat = EtatPiece.SCANNE;
-      } else if (piece.etat === EtatPiece.SCANNE) {
-        newEtat = EtatPiece.POSE;
+      if (piece.etat === EtatPiece.UNINSTALLED) {
+        newEtat = EtatPiece.ONWAIT;
+      } else if (piece.etat === EtatPiece.ONWAIT) {
+        newEtat = EtatPiece.INSTALLED;
       }
-      // Si déjà POSE, on garde POSE
+      // Si déjà INSTALLED, on garde INSTALLED
 
       if (newEtat !== piece.etat) {
         await database.updatePieceEtat(piece.id, newEtat);
@@ -132,7 +132,7 @@ class ScannerManager {
   async getPiecesPrioritairesNonPosees(): Promise<PieceCompleteInfo[]> {
     try {
       const piecesPrioritaires = await database.getPiecesPrioritaires();
-      const nonPosees = piecesPrioritaires.filter(p => p.etat !== EtatPiece.POSE);
+      const nonPosees = piecesPrioritaires.filter(p => p.etat !== EtatPiece.INSTALLED);
 
       const result: PieceCompleteInfo[] = [];
       for (const piece of nonPosees) {
@@ -156,10 +156,10 @@ class ScannerManager {
   }
 
   /**
-   * Réinitialise l'état d'une pièce à RIEN
+   * Réinitialise l'état d'une pièce à UNINSTALLED
    */
   async resetPieceEtat(pieceId: number): Promise<void> {
-    await database.updatePieceEtat(pieceId, EtatPiece.RIEN);
+    await database.updatePieceEtat(pieceId, EtatPiece.UNINSTALLED);
   }
 }
 

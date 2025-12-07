@@ -21,12 +21,14 @@ type PieceData = {
 };
 
 // Fonction utilitaire mise à jour avec EtatPiece
-function getStatusText(state: string): string {
+function getStatusText(state: EtatPiece): string {
     switch(state) {
-        case EtatPiece.RIEN: return "Non installé";
-        case EtatPiece.SCANNE: return "En attente (Scanné)";
-        case EtatPiece.POSE: return "Installé";
-        default: return state;
+        case EtatPiece.UNINSTALLED: return "Non installé";
+        case EtatPiece.ONWAIT: return "En attente (Scanné)";
+        case EtatPiece.BEING: return "En cours";
+        case EtatPiece.INSTALLED: return "Installé";
+        case EtatPiece.ERROR: return "Erreur";
+        default: return "Inconnu";
     }
 }
 
@@ -74,8 +76,8 @@ export default function Home() {
   }, []);
 
   const updateGridState = (pieces: any[]) => {
-      const installed = pieces.filter(p => p.etat === EtatPiece.POSE).map(p => p.positionIndex);
-      const waiting = pieces.filter(p => p.etat === EtatPiece.SCANNE).map(p => p.positionIndex);
+      const installed = pieces.filter(p => p.etat === EtatPiece.INSTALLED).map(p => p.positionIndex);
+      const waiting = pieces.filter(p => p.etat === EtatPiece.ONWAIT).map(p => p.positionIndex);
       setInstalledPieces(installed);
       setWaitingPieces(waiting);
   };
@@ -97,10 +99,10 @@ export default function Home() {
           setScannedPiece(updatedPiece);
 
           // 3. Refresh Grille
-          if (newState === EtatPiece.POSE) {
+          if (newState === EtatPiece.INSTALLED) {
             setInstalledPieces(prev => [...new Set([...prev, scannedPiece.positionIndex])]);
             setWaitingPieces(prev => prev.filter(p => p !== scannedPiece.positionIndex));
-          } else if (newState === EtatPiece.SCANNE) {
+          } else if (newState === EtatPiece.ONWAIT) {
             setWaitingPieces(prev => [...new Set([...prev, scannedPiece.positionIndex])]);
             setInstalledPieces(prev => prev.filter(p => p !== scannedPiece.positionIndex));
           }
@@ -201,10 +203,10 @@ export default function Home() {
                             </View>
                         </View>
                         <View style={styles.actionsContainer}>
-                            <TouchableOpacity style={[styles.actionButton, {backgroundColor: '#2E7D32'}]} onPress={() => handlePieceAction(EtatPiece.POSE)}>
+                            <TouchableOpacity style={[styles.actionButton, {backgroundColor: '#2E7D32'}]} onPress={() => handlePieceAction(EtatPiece.INSTALLED)}>
                                 <Text style={styles.actionButtonText}>Valider Pose</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[styles.actionButton, {backgroundColor: '#FFC107'}]} onPress={() => handlePieceAction(EtatPiece.SCANNE)}>
+                            <TouchableOpacity style={[styles.actionButton, {backgroundColor: '#FFC107'}]} onPress={() => handlePieceAction(EtatPiece.ONWAIT)}>
                                 <Text style={styles.actionButtonText}>Attente</Text>
                             </TouchableOpacity>
                         </View>
