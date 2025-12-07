@@ -35,7 +35,9 @@ Manelle, Sacha, Théo, Antony et Anthony
 ## Structure of the folder
 
 présentation : https://www.canva.com/design/DAG6vq7dhU0/5MFd7wfqt8lt_HX7F5m8iA/edit?utm_content=DAG6vq7dhU0&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
+
 Annexes : https://www.canva.com/design/DAG6wQvQZ88/oeTxkgPbM3p4WkDMbMAF-w/edit?utm_content=DAG6wQvQZ88&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
+
 Figma : https://www.figma.com/design/m0zwohOeYH1XlwZkqBUM1a/ALSTOM-CTX?node-id=0-1&t=dEZECYhqhxrhxP9f-1
 
 ## Requirements
