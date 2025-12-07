@@ -1,0 +1,71 @@
+// /src/components/PlacementGrid.tsx
+
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+
+type PlacementGridProps = {
+  rows: number;
+  columns: number;
+  highlightedIndex: number; // L'index de la cellule à mettre en surbrillance
+};
+
+export const PlacementGrid = ({ rows, columns, highlightedIndex }: PlacementGridProps) => {
+  const totalCells = rows * columns;
+  const cells = Array.from({ length: totalCells }, (_, index) => index); // Crée [0, 1, 2, ..., N-1]
+
+  return (
+    <View style={styles.gridContainer}>
+      {cells.map(index => {
+        // Détermine si la cellule actuelle est celle à mettre en évidence
+        const isHighlighted = index === highlightedIndex;
+
+        return (
+          <View
+            key={index}
+            style={[
+              styles.cell,
+              { width: `${100 / columns}%` }, // Répartit la largeur équitablement
+              isHighlighted && styles.highlightedCell // Applique le style si la cellule est en surbrillance
+            ]}
+          >
+            <Text style={[styles.cellText, isHighlighted && styles.highlightedText]}>
+              {index}
+            </Text>
+          </View>
+        );
+      })}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  gridContainer: {
+    width: '100%',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    borderWidth: 1,
+    borderColor: '#CCC',
+    marginTop: 15,
+    marginBottom: 15,
+  },
+  cell: {
+    aspectRatio: 1.5, // Pour que les cellules soient rectangulaires
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#CCC',
+    backgroundColor: '#F0F0F0',
+  },
+  highlightedCell: {
+    backgroundColor: '#2E7D32', // Vert pour la mise en évidence
+    borderColor: 'gold',
+  },
+  cellText: {
+    color: '#999',
+    fontSize: 12,
+  },
+  highlightedText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+});
