@@ -21,9 +21,18 @@ export default function DatabaseExample() {
   const [piecesPrioritaires, setPiecesPrioritaires] = useState<Piece[]>([]);
 
   useEffect(() => {
-    // La base de données est maintenant initialisée dans App.tsx.
-    // Ce composant se contente de charger les données.
-    loadDataWithLoading();
+    // Initialiser la DB avant de charger les données
+    const initAndLoad = async () => {
+      try {
+        await database.init();
+        await loadDataWithLoading();
+      } catch (error) {
+        Alert.alert('Erreur', 'Impossible d\'initialiser la base de données');
+        console.error(error);
+        setLoading(false);
+      }
+    };
+    initAndLoad();
   }, []);
 
   const loadDataWithLoading = async () => {

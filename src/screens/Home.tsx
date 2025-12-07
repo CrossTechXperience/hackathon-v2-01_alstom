@@ -6,6 +6,7 @@ import { scannerManager } from '../services/scannerManager';
 import { PlacementGrid } from './PlacementGrid';
 import { database } from '../services/database';
 import { seedDatabase } from '../services/seedData';
+import TestScreen from './TestScreen';
 // IMPORT CRUCIAL : On utilise le modèle partagé !
 import { EtatPiece } from '../types/models';
 
@@ -39,6 +40,7 @@ export default function Home() {
   // États
   const [modalVisible, setModalVisible] = useState(false);
   const [isGridViewVisible, setGridViewVisible] = useState(false);
+  const [isTestViewVisible, setTestViewVisible] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [scannedPiece, setScannedPiece] = useState<PieceData | null>(null);
 
@@ -55,11 +57,17 @@ export default function Home() {
   useEffect(() => {
     const init = async () => {
         try {
+            console.log('🔄 Initialisation de la base de données...');
             await database.init();
+            console.log('✅ Base de données initialisée');
+
             const pieces = await database.getAllPieces();
+            console.log(`📊 ${pieces.length} pièces trouvées dans la DB`);
+
             if (pieces.length === 0) {
-                console.log('Seed DB...');
+                console.log('🌱 Aucune donnée - Lancement du seed...');
                 await seedDatabase();
+                console.log('✅ Seed terminé');
             }
 
             // Recharger les états visuels pour la grille
@@ -67,8 +75,11 @@ export default function Home() {
             updateGridState(allPieces);
 
             setDbReady(true);
+            console.log('✅ Application prête !');
         } catch (error) {
+            console.error('❌ ERREUR lors de l\'initialisation de la DB:');
             console.error(error);
+            Alert.alert('Erreur DB', `Impossible de charger la base de données: ${error}`);
             setDbReady(true); // On laisse passer même si erreur pour pas bloquer
         }
     };
@@ -176,6 +187,10 @@ export default function Home() {
         <Text style={styles.bigScanButtonText}>Voir la grille</Text>
       </TouchableOpacity>
 
+      <TouchableOpacity style={styles.testButton} onPress={() => setTestViewVisible(true)}>
+        <Text style={styles.bigScanButtonText}>🧪 Tests</Text>
+      </TouchableOpacity>
+
       {/* MODALE INFO PIÈCE */}
       <Modal visible={modalVisible} transparent={true} animationType="slide" onRequestClose={() => setModalVisible(false)}>
           <View style={styles.modalOverlay}>
@@ -242,6 +257,19 @@ export default function Home() {
           </View>
       </Modal>
 
+      {/* MODALE TESTS */}
+      <Modal visible={isTestViewVisible} transparent={false} animationType="slide" onRequestClose={() => setTestViewVisible(false)}>
+          <View style={{flex: 1, paddingTop: safeAreaInsets.top}}>
+            <TestScreen />
+            <TouchableOpacity
+              style={{position: 'absolute', top: safeAreaInsets.top + 10, right: 20, backgroundColor: '#FF3B30', padding: 10, borderRadius: 8}}
+              onPress={() => setTestViewVisible(false)}
+            >
+              <Text style={{color: 'white', fontWeight: 'bold'}}>Fermer X</Text>
+            </TouchableOpacity>
+          </View>
+      </Modal>
+
     </View>
   );
 }
@@ -254,6 +282,7 @@ const styles = StyleSheet.create({
   bigScanButton: { backgroundColor: '#005EB8', padding: 20, borderRadius: 15, alignItems: 'center', marginTop: 20, elevation: 5 },
   bigScanButtonText: { color: 'white', fontSize: 20, fontWeight: 'bold' },
   viewGridButton: { backgroundColor: '#4CAF50', padding: 15, borderRadius: 15, alignItems: 'center', marginTop: 10, elevation: 5 },
+  testButton: { backgroundColor: '#FF9800', padding: 15, borderRadius: 15, alignItems: 'center', marginTop: 10, elevation: 5 },
   modalOverlay: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' },
   modalContent: { width: '90%', backgroundColor: 'white', borderRadius: 20, padding: 20, alignItems: 'center', elevation: 5 },
   modalTitle: { fontSize: 22, fontWeight: 'bold', marginBottom: 15, color: 'black' },

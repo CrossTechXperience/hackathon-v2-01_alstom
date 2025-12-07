@@ -24,7 +24,6 @@ class DatabaseService {
 
   private async createTables(): Promise<void> {
     if (!this.db) throw new Error('Base de données non initialisée');
-    await this.db.executeSql('DROP TABLE IF EXISTS pieces');
 
     const createWagonsTable = `
       CREATE TABLE IF NOT EXISTS wagons (
@@ -225,6 +224,41 @@ class DatabaseService {
   async updatePieceEtat(id: number, etat: EtatPiece): Promise<void> {
     if (!this.db) throw new Error('Base de données non initialisée');
     await this.db.executeSql('UPDATE pieces SET etat = ? WHERE id = ?', [etat, id]);
+  }
+
+  async getPieceByQRData(wagonNumero: string, zoneNumero: number, sacIdentifiant: string, pieceCode: string, positionIndex: number): Promise<Piece | null> {
+    if (!this.db) throw new Error('Base de données non initialisée');
+
+    // Requête avec jointures pour retrouver la pièce
+    const query = `
+      SELECT p.*
+      FROM pieces p
+      INNER JOIN sacs s ON p.sacId = s.id
+      INNER JOIN zones z ON s.zoneId = z.id
+      INNER JOIN wagons w ON z.wagonId = w.id
+      WHERE w.numero = ?
+        AND z.numero = ?
+        AND s.identifiant = ?
+        AND p.code = ?
+        AND p.positionIndex = ?
+    `;
+
+    const result = await this.db.executeSql(query, [
+      wagonNumero,
+      zoneNumero,
+      sacIdentifiant,
+      pieceCode,
+      positionIndex
+    ]);
+
+    if (result[0].rows.length === 0) return null;
+
+    const row = result[0].rows.item(0);
+    return {
+      ...row,
+      etat: row.etat as EtatPiece,
+      prioritaire: row.prioritaire === 1,
+    };
   }
 
   async getPiecesPrioritaires(): Promise<Piece[]> {
